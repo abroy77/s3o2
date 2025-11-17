@@ -249,7 +249,7 @@ mod tests {
             }
         }
         fn calculate_num_chunks(&self) -> usize {
-            (self.content.len() + self.chunk_size - 1) / self.chunk_size
+            self.content.len().div_ceil(self.chunk_size)
         }
         fn calculate_chunk_range(&self, chunk_index: usize) -> (usize, usize) {
             let start = self.chunk_size * chunk_index;

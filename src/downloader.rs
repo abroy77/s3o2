@@ -167,7 +167,7 @@ mod tests {
         let size = 15 * 1024 * 1024;
         let mut rng = rand::rng();
         let content: Vec<u8> = (0..size).map(|_| rng.random()).collect();
-        let test_setup = GetObjectFixture::with_content(content.clone().into());
+        let test_setup = GetObjectFixture::with_content(content.clone());
         let output_path = test_setup.path("output.txt");
         let bytes = test_setup
             .downloader

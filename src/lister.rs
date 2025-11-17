@@ -175,13 +175,13 @@ mod tests {
         let mut d3f = File::create(&d3f_path).unwrap();
         d3f.write_all("Well hello there D3".as_bytes()).unwrap();
 
-        return (dir, vec![d1f_path, d3f_path, d2f_path]);
+        (dir, vec![d1f_path, d3f_path, d2f_path])
     }
 
     #[test]
     fn test_tree_lister() {
         let (dir, f_paths) = make_test_dir_tree();
-        let tree = local_contents(&dir.path()).collect::<Vec<_>>();
+        let tree = local_contents(dir.path()).collect::<Vec<_>>();
         assert_eq!(tree.len(), f_paths.len());
         assert_eq!(f_paths, tree);
     }
@@ -210,7 +210,6 @@ mod tests {
             ),
         ];
         let expected_object_infos: HashSet<ObjectInfo> = input_data
-            .clone()
             .into_iter()
             .map(|(key, size, last_modified)| ObjectInfo {
                 key: key.to_string(),
