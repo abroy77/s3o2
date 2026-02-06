@@ -3,6 +3,8 @@ use aws_sdk_s3::Client;
 use clap::{Parser, Subcommand};
 use s3o2::lister::ObjectLister;
 use s3o2::multipart_downloader::MultipartDownloader;
+use s3o2::multipart_uploader::MultipartUploader;
+use s3o2::uploader::Uploader;
 use s3o2::utils::parse_uri;
 use s3o2::{downloader::Downloader, errors::S3O2Error};
 use std::path::PathBuf;
@@ -40,6 +42,24 @@ enum Commands {
         source: String,
         #[arg(value_name = "PATH")]
         target: PathBuf,
+    },
+    #[command(name = "ul")]
+    Upload {
+        #[arg(value_name = "PATH")]
+        source: PathBuf,
+        #[arg(value_name = "URI")]
+        target: String,
+    },
+    #[command(name = "mpul")]
+    MultiPartUpload {
+        #[arg(value_name = "PATH")]
+        source: PathBuf,
+        #[arg(value_name = "URI")]
+        target: String,
+        #[arg(long, value_name = "MB")]
+        chunk_size: Option<usize>,
+        #[arg(long, value_name = "INT")]
+        max_concurrent_chunks: Option<usize>,
     },
     #[command(name = "ls")]
     S3List {
@@ -99,6 +119,33 @@ async fn main() -> Result<(), S3O2Error> {
             downloader
                 .download_file(&bucket, &key, &target_path)
                 .await?;
+            Ok(())
+        }
+        Commands::Upload { source, target } => {
+            let (bucket, key) = parse_uri(target)?;
+            if !source.exists() {
+                return Err(S3O2Error::Value("Source file does not exist".into()));
+            }
+            let uploader = Uploader::new(s3_client);
+            uploader.upload_file(source, &bucket, &key).await?;
+            Ok(())
+        }
+        Commands::MultiPartUpload {
+            source,
+            target,
+            chunk_size,
+            max_concurrent_chunks,
+        } => {
+            let (bucket, key) = parse_uri(target)?;
+            if !source.exists() {
+                return Err(S3O2Error::Value("Source file does not exist".into()));
+            }
+            let uploader = MultipartUploader::new(
+                s3_client,
+                chunk_size.unwrap_or(8 * MB) as u64,
+                max_concurrent_chunks.unwrap_or(10),
+            );
+            uploader.upload_file(source, &bucket, &key).await?;
             Ok(())
         }
         Commands::S3List { target } => {
