@@ -1,8 +1,13 @@
 pub mod downloader;
 pub mod errors;
+pub mod file_filter;
 pub mod lister;
 mod macros;
+pub mod metadata;
 pub mod multipart_downloader;
 pub mod multipart_uploader;
+pub mod sync_executor;
+pub mod sync_plan;
+pub mod syncer;
 pub mod uploader;
 pub mod utils;

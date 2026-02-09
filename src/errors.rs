@@ -15,6 +15,12 @@ pub enum S3O2Error {
     ChannelClosed,
     #[error("Writer failed")]
     WriterError(#[from] JoinError),
+    #[error("Filter error: {0}")]
+    FilterError(String),
+    #[error("Sync error: {0}")]
+    SyncError(String),
+    #[error("Metadata error: {0}")]
+    MetadataError(String),
 }
 impl<E: std::fmt::Display, R> From<SdkError<E, R>> for S3O2Error {
     fn from(value: SdkError<E, R>) -> Self {

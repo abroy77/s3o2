@@ -214,14 +214,6 @@ mod tests {
             self.chunk_size = chunk_size;
             self
         }
-        pub fn fail_at_chunk(mut self, index: usize) -> Self {
-            self.fail_at_chunk = Some(index);
-            self
-        }
-        pub fn fail_at_head(mut self) -> Self {
-            self.fail_at_head = true;
-            self
-        }
         pub fn build(&self) -> aws_sdk_s3::Client {
             let mut rules = vec![self.create_head_rule()];
             rules.extend(self.create_get_rules());
@@ -307,16 +299,8 @@ mod tests {
     pub struct TestData;
 
     impl TestData {
-        pub fn element_repeated(size: usize, element: u8) -> Vec<u8> {
-            vec![element; size]
-        }
         pub fn sequential(size: usize) -> Vec<u8> {
             (0..size).map(|i| (i % 256) as u8).collect()
-        }
-        pub fn sequential_chunks(num_chunks: usize, chunk_size: usize) -> Vec<u8> {
-            (0..num_chunks)
-                .flat_map(|chunk_idx| vec![(chunk_idx % 256) as u8; chunk_size])
-                .collect()
         }
     }
 

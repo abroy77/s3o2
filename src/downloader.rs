@@ -133,17 +133,7 @@ mod tests {
                 temp_dir: TempDir::new().unwrap(),
             }
         }
-        fn with_error<F>(error_fn: F) -> Self
-        where
-            F: Fn() -> GetObjectError + Send + Sync + 'static,
-        {
-            let rule = mock!(aws_sdk_s3::Client::get_object).then_error(error_fn);
-            let client = mock_client!(aws_sdk_s3, [&rule]);
-            Self {
-                downloader: Downloader::new(client),
-                temp_dir: TempDir::new().unwrap(),
-            }
-        }
+
         fn path(&self, filename: &str) -> PathBuf {
             self.temp_dir.path().join(filename)
         }
